@@ -1,0 +1,67 @@
+# =============================================================================
+# ApplicationSet — uma Application do Argo CD por microsserviço
+# =============================================================================
+# O gerador de diretórios varre apps/overlays/dev/* e cria automaticamente uma
+# Application para cada pasta encontrada. Consequência: adicionar um sexto
+# microsserviço ao ToggleMaster é criar uma pasta — nenhuma alteração aqui.
+#
+# É este objeto que faz a UI do Argo CD mostrar os 5 microsserviços lado a lado.
+# =============================================================================
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: togglemaster-services
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+
+  generators:
+    - git:
+        repoURL: https://github.com/Marcelo6arcia/togglemaster-gitops.git
+        revision: main
+        directories:
+          - path: apps/overlays/dev/*
+
+  template:
+    metadata:
+      name: "{{.path.basename}}"
+      labels:
+        app.kubernetes.io/part-of: togglemaster
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: togglemaster
+
+      source:
+        repoURL: https://github.com/Marcelo6arcia/togglemaster-gitops.git
+        targetRevision: main
+        path: "{{.path.path}}"
+
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: togglemaster
+
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+          allowEmpty: false
+        syncOptions:
+          - CreateNamespace=true
+        retry:
+          limit: 5
+          backoff:
+            duration: 15s
+            factor: 2
+            maxDuration: 5m
+
+      # O HPA altera spec.replicas do Deployment em runtime. Sem esta exceção,
+      # o Argo CD veria o cluster "fora de sincronia" e desfaria o autoscaling.
+      ignoreDifferences:
+        - group: apps
+          kind: Deployment
+          jsonPointers:
+            - /spec/replicas

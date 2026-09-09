@@ -1,0 +1,9 @@
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Saída de `kustomize build` usada em validação local
+rendered/
+*.rendered.yaml
