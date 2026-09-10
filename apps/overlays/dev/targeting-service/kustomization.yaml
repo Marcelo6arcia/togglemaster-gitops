@@ -4,14 +4,13 @@ kind: Kustomization
 namespace: togglemaster
 
 resources:
-  - ../../../base/targeting-service
+- ../../../base/targeting-service
 
 # `labels` com includeSelectors=false: o rótulo é aplicado nos objetos sem
 # entrar no selector do Deployment, que é imutável depois de criado.
 labels:
-  - pairs:
-      app.kubernetes.io/instance: dev
-    includeSelectors: false
+- pairs:
+    app.kubernetes.io/instance: dev
 
 # ---------------------------------------------------------------------------
 # ESTE BLOCO É ESCRITO PELO PIPELINE DE CI.
@@ -21,6 +20,6 @@ labels:
 # Não edite manualmente — o próximo build sobrescreve.
 # ---------------------------------------------------------------------------
 images:
-  - name: targeting-service
-    newName: 456788081240.dkr.ecr.us-east-1.amazonaws.com/targeting-service
-    newTag: v1.0.0-initial
+- name: targeting-service
+  newName: 456788081240.dkr.ecr.us-east-1.amazonaws.com/targeting-service
+  newTag: v1.0.0-77fc3c0
