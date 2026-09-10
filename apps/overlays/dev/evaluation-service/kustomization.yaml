@@ -4,14 +4,13 @@ kind: Kustomization
 namespace: togglemaster
 
 resources:
-  - ../../../base/evaluation-service
+- ../../../base/evaluation-service
 
 # `labels` com includeSelectors=false: o rótulo é aplicado nos objetos sem
 # entrar no selector do Deployment, que é imutável depois de criado.
 labels:
-  - pairs:
-      app.kubernetes.io/instance: dev
-    includeSelectors: false
+- pairs:
+    app.kubernetes.io/instance: dev
 
 # ---------------------------------------------------------------------------
 # ESTE BLOCO É ESCRITO PELO PIPELINE DE CI.
@@ -21,17 +20,17 @@ labels:
 # Não edite manualmente — o próximo build sobrescreve.
 # ---------------------------------------------------------------------------
 images:
-  - name: evaluation-service
-    newName: 456788081240.dkr.ecr.us-east-1.amazonaws.com/evaluation-service
-    newTag: v1.0.0-initial
+- name: evaluation-service
+  newName: 456788081240.dkr.ecr.us-east-1.amazonaws.com/evaluation-service
+  newTag: v1.0.0-77fc3c0
 
-patches:
   # Anota o ServiceAccount com a role IRSA do ambiente dev.
   # O ARN sai de: terraform -chdir=terraform/envs/dev/infra output -json irsa_role_arns
-  - target:
-      kind: ServiceAccount
-      name: evaluation-service
-    patch: |-
-      - op: replace
-        path: /metadata/annotations/eks.amazonaws.com~1role-arn
-        value: arn:aws:iam::456788081240:role/togglemaster-dev-evaluation-service
+patches:
+- patch: |-
+    - op: replace
+      path: /metadata/annotations/eks.amazonaws.com~1role-arn
+      value: arn:aws:iam::456788081240:role/togglemaster-dev-evaluation-service
+  target:
+    kind: ServiceAccount
+    name: evaluation-service
