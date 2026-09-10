@@ -67,9 +67,7 @@ spec:
               echo ">>> cadastrando a chave de servico do evaluation-service"
               psql "$AUTH_DATABASE_URL" -v ON_ERROR_STOP=1 \
                 -v hash="$SERVICE_API_KEY_HASH" \
-                -c "INSERT INTO api_keys (name, key_hash, is_active)
-                    VALUES ('evaluation-service-key', :'hash', true)
-                    ON CONFLICT (key_hash) DO UPDATE SET is_active = true;"
+                --single-transaction -f /sql/service-key.sql
 
               echo ">>> bootstrap concluido"
           env:

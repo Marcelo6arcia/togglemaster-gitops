@@ -19,6 +19,24 @@ data:
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
 
+  # Cadastro da chave de servico do evaluation-service. Fica aqui, e nao numa
+  # string `psql -c`, porque o psql so interpola variaveis (-v) na entrada
+  # lida de arquivo ou stdin; em -c a string vai crua para o servidor e o
+  # :'hash' chega literal, gerando `syntax error at or near ":"`.
+  #
+  # O UPDATE antes do INSERT cobre a rotacao do hash: sem ele, um hash novo
+  # inseriria uma linha nova e a chave antiga continuaria is_active = true,
+  # porque `name` nao tem constraint UNIQUE e o ON CONFLICT so casa por
+  # key_hash. Chave revogada que segue valida e falha de seguranca.
+  service-key.sql: |
+    UPDATE api_keys SET is_active = false
+     WHERE name = 'evaluation-service-key'
+       AND key_hash <> :'hash';
+
+    INSERT INTO api_keys (name, key_hash, is_active)
+    VALUES ('evaluation-service-key', :'hash', true)
+    ON CONFLICT (key_hash) DO UPDATE SET is_active = true;
+
   flag.sql: |
     CREATE TABLE IF NOT EXISTS flags (
         id          SERIAL PRIMARY KEY,
