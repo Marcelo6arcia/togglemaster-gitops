@@ -55,7 +55,7 @@ seguinte.
 │
 └── platform/
     ├── external-secrets/             SecretStore + 6 ExternalSecrets
-    ├── bootstrap/                    esquema dos bancos + Job PreSync
+    ├── bootstrap/                    esquema dos bancos + Job de migração
     ├── ingress.yaml                  roteamento dos 5 serviços por prefixo
     └── kustomization.yaml
 ```

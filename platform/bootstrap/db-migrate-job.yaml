@@ -1,5 +1,5 @@
 # =============================================================================
-# Job de bootstrap dos bancos — hook PreSync do Argo CD
+# Job de bootstrap dos bancos — hook Sync do Argo CD, wave 0
 # =============================================================================
 # Substitui os ~120 linhas de `scripts/deploy.sh` da Fase 2, que aplicavam
 # migrações e geravam a chave de serviço com uma sequência de curl e kubectl
@@ -10,6 +10,18 @@
 #   2. cadastra o hash da chave de serviço do evaluation-service na tabela
 #      api_keys — a chave em claro fica só no Secrets Manager.
 #
+# Hook de fase SYNC, e não PreSync. Hooks PreSync rodam numa fase própria, que
+# termina inteira antes de qualquer recurso do sync ser aplicado — inclusive
+# antes do SecretStore (wave -2) e dos ExternalSecrets (wave -1) que produzem
+# os Secrets que este Job consome. Como PreSync, o Job esperava por Secrets que
+# ainda nem tinham sido pedidos, e o sync travava sem aplicar nada. Sync-waves
+# ordenam recursos DENTRO de uma fase; elas não atravessam fases.
+#
+# Hooks de fase Sync entram na fila de waves junto com os recursos comuns:
+#   SecretStore (-2) -> ExternalSecrets (-1) -> este Job (0) -> Ingress (1)
+# O Argo CD tem health check para ExternalSecret, então só avança para a wave 0
+# depois que os Secrets existem de fato.
+#
 # hook-delete-policy=BeforeHookCreation: o Job é recriado a cada sync, evitando
 # o erro de campo imutável que aconteceria com um Job comum versionado.
 # =============================================================================
@@ -18,7 +30,8 @@ kind: Job
 metadata:
   name: db-bootstrap
   annotations:
-    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/sync-wave: "0"
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
 spec:
   backoffLimit: 10
