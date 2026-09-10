@@ -22,5 +22,5 @@ labels:
 # ---------------------------------------------------------------------------
 images:
   - name: targeting-service
-    newName: ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/targeting-service
+    newName: 456788081240.dkr.ecr.us-east-1.amazonaws.com/targeting-service
     newTag: v1.0.0-initial

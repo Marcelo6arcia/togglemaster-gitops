@@ -111,18 +111,16 @@ sem o prefixo, não haveria como distingui-los.
 
 ---
 
-## Primeira configuração
+## Configuração da conta
 
-Substitua `ACCOUNT_ID` pelo ID da sua conta AWS nos overlays:
+Os overlays já apontam para a conta `456788081240` em `us-east-1`: o registry
+do ECR e os ARNs das roles IRSA. Para apontar para outra conta:
 
 ```bash
-ACCOUNT_ID=123456789012
-grep -rl ACCOUNT_ID apps/ | xargs sed -i "s/ACCOUNT_ID/${ACCOUNT_ID}/g"
-git commit -am "chore: aponta os overlays para o registry da conta"
-git push
+grep -rl 456788081240 apps/ | xargs sed -i '' "s/456788081240/<nova-conta>/g"
 ```
 
-Obtenha os valores corretos com:
+Os valores corretos saem do Terraform:
 
 ```bash
 terraform -chdir=terraform/envs/dev/infra output -json gitops_wiring

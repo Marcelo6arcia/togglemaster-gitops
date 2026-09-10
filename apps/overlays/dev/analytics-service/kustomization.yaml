@@ -22,16 +22,16 @@ labels:
 # ---------------------------------------------------------------------------
 images:
   - name: analytics-service
-    newName: ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/analytics-service
+    newName: 456788081240.dkr.ecr.us-east-1.amazonaws.com/analytics-service
     newTag: v1.0.0-initial
 
 patches:
   # Anota o ServiceAccount com a role IRSA do ambiente dev.
-  # Substitua ACCOUNT_ID pelo ID da sua conta AWS.
+  # O ARN sai de: terraform -chdir=terraform/envs/dev/infra output -json irsa_role_arns
   - target:
       kind: ServiceAccount
       name: analytics-service
     patch: |-
       - op: replace
         path: /metadata/annotations/eks.amazonaws.com~1role-arn
-        value: arn:aws:iam::ACCOUNT_ID:role/togglemaster-dev-analytics-service
+        value: arn:aws:iam::456788081240:role/togglemaster-dev-analytics-service

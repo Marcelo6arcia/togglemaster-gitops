@@ -22,5 +22,5 @@ labels:
 # ---------------------------------------------------------------------------
 images:
   - name: auth-service
-    newName: ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/auth-service
+    newName: 456788081240.dkr.ecr.us-east-1.amazonaws.com/auth-service
     newTag: v1.0.0-initial
