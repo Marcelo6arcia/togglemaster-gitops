@@ -22,4 +22,4 @@ labels:
 images:
 - name: flag-service
   newName: 456788081240.dkr.ecr.us-east-1.amazonaws.com/flag-service
-  newTag: v1.0.0-77fc3c0
+  newTag: v1.0.0-3d1d928
